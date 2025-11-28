@@ -31,6 +31,19 @@ public class CombinedPay {
         this.notes = notes;
     }
 
+    public int getEmployeeId() { return employeeId; }
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
+    public String getSsn() { return ssn; }
+    public String getJobTitle() { return jobTitle; }
+    public String getDivision() { return division; }
+    public double getSalary() { return salary; }
+    public Date getPayDate() { return payDate; }
+    public double getGrossPay() { return grossPay; }
+    public double getDeductions() { return deductions; }
+    public double getNetPay() { return netPay; }
+    public String getNotes() { return notes; }
+
     @Override
     public String toString() {
         return "CombinedPay{" +

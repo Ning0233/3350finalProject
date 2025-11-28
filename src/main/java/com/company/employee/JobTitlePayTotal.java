@@ -11,6 +11,10 @@ public class JobTitlePayTotal {
         this.totalNet = totalNet;
     }
 
+    public String getJobTitle() { return jobTitle; }
+    public double getTotalGross() { return totalGross; }
+    public double getTotalNet() { return totalNet; }
+
     @Override
     public String toString() {
         return "JobTitlePayTotal{" +

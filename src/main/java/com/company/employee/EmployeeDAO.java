@@ -165,6 +165,16 @@ public class EmployeeDAO {
         return out;
     }
 
+    // list all employees
+    public List<Employee> listAll() throws SQLException {
+        String sql = "SELECT id, first_name, last_name, ssn, job_title, division, salary FROM employee ORDER BY last_name, first_name";
+        List<Employee> out = new ArrayList<>();
+        try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) out.add(mapRow(rs));
+        }
+        return out;
+    }
+
     public void updateEmployee(Employee e) throws SQLException {
         String sql = "UPDATE employee SET first_name = ?, last_name = ?, ssn = ?, job_title = ?, division = ?, salary = ? WHERE id = ?";
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {

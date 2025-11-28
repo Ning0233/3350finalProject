@@ -11,6 +11,10 @@ public class DivisionPayTotal {
         this.totalNet = totalNet;
     }
 
+    public String getDivision() { return division; }
+    public double getTotalGross() { return totalGross; }
+    public double getTotalNet() { return totalNet; }
+
     @Override
     public String toString() {
         return "DivisionPayTotal{" +
