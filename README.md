@@ -15,9 +15,9 @@ This repository contains a minimal employee management application (console, JDB
 - `openssl` (optional; used by the keystore script)
 
 **1) Start the local MySQL (Docker)**
-The project includes `docker-compose.yml` which creates a MySQL container and runs the SQL files in `./sql` at initialization.
+The project includes `docker-compose.yml` for a convenience MySQL container, but if you prefer NOT to use Docker, follow the instructions below to run MySQL locally.
 
-From the project root:
+If you are using Docker, from the project root:
 ```bash
 docker compose up -d
 docker logs -f fp_mysql --tail 200
@@ -36,6 +36,45 @@ Credentials created by the compose/init scripts (for local development):
 - test user: `test_user` / `secret123` (used by tests)
 
 If you prefer to manage the DB with DBeaver / Workbench, connect to `127.0.0.1:3306` using the above credentials and run `SHOW TABLES IN employeeData;`.
+
+Using local MySQL (no Docker)
+--------------------------------
+If you don't want to use Docker, install and run MySQL locally and apply the project's SQL scripts.
+
+On macOS (Homebrew):
+```bash
+# install (if needed)
+brew install mysql
+
+# start the server
+brew services start mysql
+
+# optionally run the secure installer
+mysql_secure_installation
+```
+
+Create schemas and users by running the SQL files in the `sql/` directory from the project root. Example (run as the MySQL root user):
+```bash
+# create users and grants
+mysql -u root -p < sql/00_create_users.sql
+
+# create schema and tables
+mysql -u root -p < sql/01_create_employee_schema.sql
+
+# run idempotent alters (if any)
+mysql -u root -p < sql/02_alter_add_ssn.sql
+
+# (optional) insert sample data
+mysql -u root -p < sql/sample_inserts.sql
+```
+
+Notes:
+- After running the scripts, verify tables exist:
+  ```bash
+  mysql -u root -p -e "USE employeeData; SHOW TABLES;"
+  ```
+- Update `src/main/resources/db.properties` (or `src/test/resources/db-test.properties`) to point to `127.0.0.1:3306` and set the correct username/password if you changed them.
+
 
 **2) Generate local HTTPS keystore (development only)**
 The app is configured to serve HTTPS on port `8443` and redirect HTTP `8080` to HTTPS. A script creates a self-signed PKCS12 keystore used by Spring Boot.
@@ -131,6 +170,41 @@ Files of interest:
 - `scripts/generate-keystore.sh` — create dev PKCS12 keystore
 
 Happy to update this README with screenshots or a short video guide if you'd like.
+
+**JDBC connection (examples)**
+If you need to use a plain JDBC connection to MySQL (for tests or a small script) the project already uses JDBC in `EmployeeDAO`. By default the DAO loads connection properties from `src/main/resources/db.properties` (the test suite may use `src/test/resources/db-test.properties`).
+
+Minimal Java example using `DriverManager` and `Properties`:
+```java
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.Properties;
+
+Properties props = new Properties();
+props.setProperty("user", "proj_user");
+props.setProperty("password", "proj_pass");
+// development-only flags used in this repo
+props.setProperty("allowPublicKeyRetrieval", "true");
+props.setProperty("useSSL", "false");
+
+String url = "jdbc:mysql://127.0.0.1:3306/employeeData?serverTimezone=UTC";
+try (Connection conn = DriverManager.getConnection(url, props)) {
+  // use connection
+}
+```
+
+Load properties from the project's resource file and use `EmployeeDAO` (preferred):
+```java
+// EmployeeDAO loads `db.properties` by default (classpath resource)
+EmployeeDAO dao = new EmployeeDAO();
+// dao methods will open connections using the settings in src/main/resources/db.properties
+```
+
+Notes:
+- When connecting to the local MySQL container created by `docker compose up` use host `127.0.0.1` and port `3306`.
+- If you get "Public Key Retrieval is not allowed" add `allowPublicKeyRetrieval=true` to the JDBC URL or properties (this repo's `db.properties` already includes this for local development).
+- For TLS/production, do not use `allowPublicKeyRetrieval=true` or `useSSL=false` — use properly configured certificates.
+
 
 **Dependencies (Maven)**
 - **Spring Boot Parent:** `org.springframework.boot:spring-boot-starter-parent:3.2.12` (project parent)
