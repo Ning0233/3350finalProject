@@ -114,14 +114,15 @@ public class EmployeeDAO {
     }
 
     public void insertEmployee(Employee e) throws SQLException {
-        String sql = "INSERT INTO employee (first_name, last_name, ssn, job_title, division, salary) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO employee (first_name, last_name, address, ssn, job_title, division, salary) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, e.getFirstName());
             ps.setString(2, e.getLastName());
-            ps.setString(3, e.getSsn());
-            ps.setString(4, e.getJobTitle());
-            ps.setString(5, e.getDivision());
-            ps.setDouble(6, e.getSalary());
+            ps.setString(3, e.getAddress());
+            ps.setString(4, e.getSsn());
+            ps.setString(5, e.getJobTitle());
+            ps.setString(6, e.getDivision());
+            ps.setDouble(7, e.getSalary());
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) e.setId(rs.getInt(1));
@@ -130,7 +131,7 @@ public class EmployeeDAO {
     }
 
     public Employee findById(int id) throws SQLException {
-        String sql = "SELECT id, first_name, last_name, ssn, job_title, division, salary FROM employee WHERE id = ?";
+        String sql = "SELECT id, first_name, last_name, address, ssn, job_title, division, salary FROM employee WHERE id = ?";
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -141,7 +142,7 @@ public class EmployeeDAO {
     }
 
     public Employee findBySSN(String ssn) throws SQLException {
-        String sql = "SELECT id, first_name, last_name, ssn, job_title, division, salary FROM employee WHERE ssn = ?";
+        String sql = "SELECT id, first_name, last_name, address, ssn, job_title, division, salary FROM employee WHERE ssn = ?";
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, ssn);
             try (ResultSet rs = ps.executeQuery()) {
@@ -152,7 +153,7 @@ public class EmployeeDAO {
     }
 
     public List<Employee> findByName(String nameFragment) throws SQLException {
-        String sql = "SELECT id, first_name, last_name, ssn, job_title, division, salary FROM employee WHERE first_name LIKE ? OR last_name LIKE ?";
+        String sql = "SELECT id, first_name, last_name, address, ssn, job_title, division, salary FROM employee WHERE first_name LIKE ? OR last_name LIKE ?";
         List<Employee> out = new ArrayList<>();
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             String like = "%" + nameFragment + "%";
@@ -167,7 +168,7 @@ public class EmployeeDAO {
 
     // list all employees
     public List<Employee> listAll() throws SQLException {
-        String sql = "SELECT id, first_name, last_name, ssn, job_title, division, salary FROM employee ORDER BY last_name, first_name";
+        String sql = "SELECT id, first_name, last_name, address, ssn, job_title, division, salary FROM employee ORDER BY last_name, first_name";
         List<Employee> out = new ArrayList<>();
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) out.add(mapRow(rs));
@@ -175,21 +176,24 @@ public class EmployeeDAO {
         return out;
     }
 
-    public void updateEmployee(Employee e) throws SQLException {
-        String sql = "UPDATE employee SET first_name = ?, last_name = ?, ssn = ?, job_title = ?, division = ?, salary = ? WHERE id = ?";
+    public boolean updateEmployee(Employee e) throws SQLException {
+        String sql = "UPDATE employee SET first_name = ?, last_name = ?, address = ?, ssn = ?, job_title = ?, division = ?, salary = ? WHERE id = ?";
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, e.getFirstName());
             ps.setString(2, e.getLastName());
-            ps.setString(3, e.getSsn());
-            ps.setString(4, e.getJobTitle());
-            ps.setString(5, e.getDivision());
-            ps.setDouble(6, e.getSalary());
-            ps.setInt(7, e.getId());
-            ps.executeUpdate();
+            ps.setString(3, e.getAddress());
+            ps.setString(4, e.getSsn());
+            ps.setString(5, e.getJobTitle());
+            ps.setString(6, e.getDivision());
+            ps.setDouble(7, e.getSalary());
+            ps.setInt(8, e.getId());
+            int affected = ps.executeUpdate();
+            return affected > 0;
         }
     }
 
     public int updateSalaryByRange(double percent, double minInclusive, double maxExclusive) throws SQLException {
+        if (percent <= 0) throw new IllegalArgumentException("Percentage must be positive.");
         String sql = "UPDATE employee SET salary = salary * (1 + ?/100) WHERE salary >= ? AND salary < ?";
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setDouble(1, percent);
@@ -201,13 +205,14 @@ public class EmployeeDAO {
 
     private Employee mapRow(ResultSet rs) throws SQLException {
         return new Employee(
-                rs.getInt("id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("ssn"),
-                rs.getString("job_title"),
-                rs.getString("division"),
-                rs.getDouble("salary")
+            rs.getInt("id"),
+            rs.getString("first_name"),
+            rs.getString("last_name"),
+            rs.getString("ssn"),
+            rs.getString("job_title"),
+            rs.getString("division"),
+            rs.getString("address"),
+            rs.getDouble("salary")
         );
     }
 }

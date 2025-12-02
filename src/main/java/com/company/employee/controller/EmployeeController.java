@@ -64,7 +64,8 @@ public class EmployeeController {
     public ResponseEntity<?> update(@PathVariable int id, @RequestBody Employee e) {
         try {
             e.setId(id);
-            dao.updateEmployee(e);
+            boolean updated = dao.updateEmployee(e);
+            if (!updated) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found.");
             return ResponseEntity.ok(e);
         } catch (SQLException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());

@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.company.employee.EmployeeDAOTest
 -------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.938 s -- in com.company.employee.EmployeeDAOTest
+Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.299 s -- in com.company.employee.EmployeeDAOTest

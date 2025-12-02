@@ -7,17 +7,19 @@ public class Employee {
     private String ssn; // no dashes
     private String jobTitle;
     private String division;
+    private String address;
     private double salary;
 
     public Employee() {}
 
-    public Employee(int id, String firstName, String lastName, String ssn, String jobTitle, String division, double salary) {
+    public Employee(int id, String firstName, String lastName, String ssn, String jobTitle, String division, String address, double salary) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.ssn = ssn;
         this.jobTitle = jobTitle;
         this.division = division;
+        this.address = address;
         this.salary = salary;
     }
 
@@ -69,6 +71,9 @@ public class Employee {
         this.division = division;
     }
 
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
     public double getSalary() {
         return salary;
     }
@@ -86,6 +91,7 @@ public class Employee {
                 ", ssn='" + ssn + '\'' +
                 ", jobTitle='" + jobTitle + '\'' +
                 ", division='" + division + '\'' +
+                ", address='" + address + '\'' +
                 ", salary=" + salary +
                 '}';
     }

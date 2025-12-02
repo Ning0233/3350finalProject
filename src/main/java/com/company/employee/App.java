@@ -63,9 +63,11 @@ public class App {
             String job = sc.nextLine().trim();
             System.out.print("Division: ");
             String div = sc.nextLine().trim();
+            System.out.print("Address: ");
+            String addr = sc.nextLine().trim();
             System.out.print("Salary: ");
             double sal = Double.parseDouble(sc.nextLine().trim());
-            Employee e = new Employee(0, fn, ln, ssn, job, div, sal);
+            Employee e = new Employee(0, fn, ln, ssn, job, div, addr, sal);
             dao.insertEmployee(e);
             System.out.println("Inserted: " + e);
         } catch (Exception ex) {
@@ -124,6 +126,9 @@ public class App {
             System.out.print("New SSN (no dashes, enter to keep): ");
             String ssn = sc.nextLine().trim();
             if (!ssn.isEmpty()) e.setSsn(ssn);
+            System.out.print("New address (enter to keep): ");
+            String newAddr = sc.nextLine().trim();
+            if (!newAddr.isEmpty()) e.setAddress(newAddr);
             System.out.print("New job title (enter to keep): ");
             String job = sc.nextLine().trim();
             if (!job.isEmpty()) e.setJobTitle(job);
@@ -133,8 +138,9 @@ public class App {
             System.out.print("New salary (enter to keep): ");
             String salStr = sc.nextLine().trim();
             if (!salStr.isEmpty()) e.setSalary(Double.parseDouble(salStr));
-            dao.updateEmployee(e);
-            System.out.println("Updated: " + e);
+            boolean ok = dao.updateEmployee(e);
+            if (!ok) System.out.println("Employee not found");
+            else System.out.println("Updated: " + e);
         } catch (Exception ex) {
             System.out.println("Error updating: " + ex.getMessage());
         }
