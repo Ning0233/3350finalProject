@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS employee (
   id INT AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
+  address VARCHAR(255),
   ssn VARCHAR(9) UNIQUE,
   job_title VARCHAR(100),
   division VARCHAR(100),

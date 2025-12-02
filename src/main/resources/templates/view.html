@@ -10,6 +10,8 @@
 <ul>
   <li><strong>ID:</strong> <span th:text="${employee.id}"></span></li>
   <li><strong>SSN:</strong> <span th:text="${employee.ssn}"></span></li>
+  <li><strong>Address:</strong> <span th:text="${employee.address}"></span></li>
+  <li><strong>Full-time:</strong> <span th:text="${employee.fullTime} ? 'Yes' : 'No'"></span></li>
   <li><strong>Job Title:</strong> <span th:text="${employee.jobTitle}"></span></li>
   <li><strong>Division:</strong> <span th:text="${employee.division}"></span></li>
   <li><strong>Salary:</strong> <span th:text="${employee.salary}"></span></li>

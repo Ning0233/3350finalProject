@@ -13,12 +13,39 @@
 </head>
 <body>
 <h1>Employees</h1>
-<p><a class="button" href="/employees/new">New Employee</a> <a class="button" href="/api/reports/fulltime-pay">View Full-Time Pay Report (JSON)</a></p>
+<p>
+  <a class="button" href="/employees/new">New Employee</a>
+  <a class="button" href="/api/reports/fulltime-pay">View Full-Time Pay Report (JSON)</a>
+  <a class="button" href="/salary/update">Update Salaries by Range</a>
+</p>
+
+<section>
+  <h3>Search</h3>
+  <form th:action="@{/search/id}" method="get" style="display:inline-block;margin-right:12px">
+    <label>ID: <input type="number" name="id" /></label>
+    <button type="submit">Find by ID</button>
+  </form>
+
+  <form th:action="@{/search/ssn}" method="get" style="display:inline-block;margin-right:12px">
+    <label>SSN: <input type="text" name="ssn" /></label>
+    <button type="submit">Find by SSN</button>
+  </form>
+
+  <form th:action="@{/search/name}" method="get" style="display:inline-block">
+    <label>Name: <input type="text" name="name" placeholder="first or last or both"/></label>
+    <button type="submit">Search by Name</button>
+  </form>
+</section>
+
+<div th:if="${message}" style="margin-top:12px;color:#b22222"><span th:text="${message}"></span></div>
 <table>
   <thead>
     <tr>
       <th>ID</th>
+      <th>Actions</th>
       <th>Name</th>
+      <th>Address</th>
+      <th>Full-time</th>
       <th>Job Title</th>
       <th>Division</th>
       <th>Salary</th>
@@ -27,7 +54,14 @@
   <tbody>
     <tr th:each="emp : ${employees}">
       <td th:text="${emp.id}"></td>
+      <td>
+        <a th:href="@{'/employees/' + ${emp.id}}">View</a>
+        &nbsp;|&nbsp;
+        <a th:href="@{'/employees/' + ${emp.id} + '/edit'}">Edit</a>
+      </td>
       <td th:text="${emp.firstName} + ' ' + ${emp.lastName}"></td>
+      <td th:text="${emp.address}"></td>
+      <td th:text="${emp.fullTime} ? 'Yes' : 'No'"></td>
       <td th:text="${emp.jobTitle}"></td>
       <td th:text="${emp.division}"></td>
       <td th:text="${emp.salary}"></td>

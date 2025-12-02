@@ -8,6 +8,7 @@ public class Employee {
     private String jobTitle;
     private String division;
     private String address;
+    private boolean isFullTime = true;
     private double salary;
 
     public Employee() {}
@@ -21,6 +22,12 @@ public class Employee {
         this.division = division;
         this.address = address;
         this.salary = salary;
+    }
+
+    // New constructor including full-time flag (keeps old one for compatibility)
+    public Employee(int id, String firstName, String lastName, String ssn, String jobTitle, String division, String address, double salary, boolean isFullTime) {
+        this(id, firstName, lastName, ssn, jobTitle, division, address, salary);
+        this.isFullTime = isFullTime;
     }
 
     public int getId() {
@@ -73,6 +80,9 @@ public class Employee {
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
+
+    public boolean isFullTime() { return isFullTime; }
+    public void setFullTime(boolean fullTime) { isFullTime = fullTime; }
 
     public double getSalary() {
         return salary;

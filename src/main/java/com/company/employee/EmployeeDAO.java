@@ -114,7 +114,7 @@ public class EmployeeDAO {
     }
 
     public void insertEmployee(Employee e) throws SQLException {
-        String sql = "INSERT INTO employee (first_name, last_name, address, ssn, job_title, division, salary) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO employee (first_name, last_name, address, ssn, job_title, division, salary, is_full_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, e.getFirstName());
             ps.setString(2, e.getLastName());
@@ -123,6 +123,7 @@ public class EmployeeDAO {
             ps.setString(5, e.getJobTitle());
             ps.setString(6, e.getDivision());
             ps.setDouble(7, e.getSalary());
+            ps.setBoolean(8, e.isFullTime());
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) e.setId(rs.getInt(1));
@@ -131,7 +132,7 @@ public class EmployeeDAO {
     }
 
     public Employee findById(int id) throws SQLException {
-        String sql = "SELECT id, first_name, last_name, address, ssn, job_title, division, salary FROM employee WHERE id = ?";
+        String sql = "SELECT id, first_name, last_name, address, ssn, job_title, division, salary, is_full_time FROM employee WHERE id = ?";
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -142,7 +143,7 @@ public class EmployeeDAO {
     }
 
     public Employee findBySSN(String ssn) throws SQLException {
-        String sql = "SELECT id, first_name, last_name, address, ssn, job_title, division, salary FROM employee WHERE ssn = ?";
+        String sql = "SELECT id, first_name, last_name, address, ssn, job_title, division, salary, is_full_time FROM employee WHERE ssn = ?";
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, ssn);
             try (ResultSet rs = ps.executeQuery()) {
@@ -153,7 +154,7 @@ public class EmployeeDAO {
     }
 
     public List<Employee> findByName(String nameFragment) throws SQLException {
-        String sql = "SELECT id, first_name, last_name, address, ssn, job_title, division, salary FROM employee WHERE first_name LIKE ? OR last_name LIKE ?";
+        String sql = "SELECT id, first_name, last_name, address, ssn, job_title, division, salary, is_full_time FROM employee WHERE first_name LIKE ? OR last_name LIKE ?";
         List<Employee> out = new ArrayList<>();
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             String like = "%" + nameFragment + "%";
@@ -168,7 +169,7 @@ public class EmployeeDAO {
 
     // list all employees
     public List<Employee> listAll() throws SQLException {
-        String sql = "SELECT id, first_name, last_name, address, ssn, job_title, division, salary FROM employee ORDER BY last_name, first_name";
+        String sql = "SELECT id, first_name, last_name, address, ssn, job_title, division, salary, is_full_time FROM employee ORDER BY last_name, first_name";
         List<Employee> out = new ArrayList<>();
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) out.add(mapRow(rs));
@@ -177,7 +178,7 @@ public class EmployeeDAO {
     }
 
     public boolean updateEmployee(Employee e) throws SQLException {
-        String sql = "UPDATE employee SET first_name = ?, last_name = ?, address = ?, ssn = ?, job_title = ?, division = ?, salary = ? WHERE id = ?";
+        String sql = "UPDATE employee SET first_name = ?, last_name = ?, address = ?, ssn = ?, job_title = ?, division = ?, salary = ?, is_full_time = ? WHERE id = ?";
         try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, e.getFirstName());
             ps.setString(2, e.getLastName());
@@ -186,7 +187,8 @@ public class EmployeeDAO {
             ps.setString(5, e.getJobTitle());
             ps.setString(6, e.getDivision());
             ps.setDouble(7, e.getSalary());
-            ps.setInt(8, e.getId());
+            ps.setBoolean(8, e.isFullTime());
+            ps.setInt(9, e.getId());
             int affected = ps.executeUpdate();
             return affected > 0;
         }
@@ -212,7 +214,8 @@ public class EmployeeDAO {
             rs.getString("job_title"),
             rs.getString("division"),
             rs.getString("address"),
-            rs.getDouble("salary")
+            rs.getDouble("salary"),
+            rs.getBoolean("is_full_time")
         );
     }
 }
